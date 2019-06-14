@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitFactory {
 
-    private val BASE_URL = ""//根地址
+    private val BASE_URL = "https://www.baidu.com/"//根地址
 
     private val TIMEOUT: Long = 30//超时时间
     // Retrofit是基于OkHttpClient的，可以创建一个OkHttpClient进行一些配置

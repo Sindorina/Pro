@@ -15,7 +15,7 @@ object UserDeviceInfo {
     var password:String = ""
 
     private val commonHeaderMap = mutableMapOf<String,String>()
-    public fun getHeaderMap():MutableMap<String,String>{
+    fun getHeaderMap():MutableMap<String,String>{
         if (commonHeaderMap.isEmpty()){
             commonHeaderMap["Device"] = Device
             commonHeaderMap["Terrace"] = Terrace
@@ -26,7 +26,7 @@ object UserDeviceInfo {
         return commonHeaderMap
     }
 
-    public fun getToken(){
+    fun getToken(){
         val fieldMap = mapOf(Pair("phone", phone),
             Pair("password", password)
         )
@@ -39,6 +39,10 @@ object UserDeviceInfo {
         ApiMethod.apiSubscribe(observable,observer)
     }
     private val observer = object :BaseObserver<Any>(){
+        override fun onHandleError(msg: String) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
         override fun onHandleSuccess(t: JSONObject) {
             val data:JSONObject = t.optJSONObject("data")
             val newToken = data.optString("token")
@@ -52,4 +56,20 @@ object UserDeviceInfo {
             LogUtil.logE("UserDeviceInfo","token获取失败!")
         }
     }
+
+    fun getTokenTest(){
+        val testObserverable = RetrofitFactory.instance.getTokenTest()
+        ApiMethod.apiSubscribe(testObserverable,testObserver)
+    }
+    private val testObserver = object :BaseObserver<Any>(){
+        override fun onHandleError(msg: String) {
+            LogUtil.logE("UserDeviceInfo","获取测试token错误-->$msg")
+        }
+
+        override fun onHandleSuccess(t: JSONObject) {
+            LogUtil.logE("UserDeviceInfo","获取测试token-->$t")
+        }
+
+    }
+
 }

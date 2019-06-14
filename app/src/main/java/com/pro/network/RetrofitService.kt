@@ -23,4 +23,8 @@ interface RetrofitService {
         @HeaderMap headers:Map<String,String>//header的map
     ): Observable<ResponseBody>
 
+
+    //测试网络接口
+    @GET("/")
+    fun getTokenTest(): Observable<ResponseBody>
 }

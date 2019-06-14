@@ -37,7 +37,6 @@ abstract class BaseObserver<T> : Observer<T> {
             }
 
         }
-
     }
 
     override fun onError(e: Throwable) {
@@ -45,8 +44,12 @@ abstract class BaseObserver<T> : Observer<T> {
         if (e is HttpException){
             val errorCode = e.response().code()
             if (errorCode == 4001){
+                //获取token
+                UserDeviceInfo.getToken()
                 needHandleError = false
             }
+            //测试获取token
+            UserDeviceInfo.getTokenTest()
         }
         if (needHandleError){
             onHandleError("{error:" + e.message + "}")
@@ -59,9 +62,7 @@ abstract class BaseObserver<T> : Observer<T> {
 
     protected abstract fun onHandleSuccess(t: JSONObject)
 
-    protected fun onHandleError(msg: String) {
-
-    }
+    protected abstract fun onHandleError(msg: String)
 
     companion object {
         private val TAG = "BaseObserver"
