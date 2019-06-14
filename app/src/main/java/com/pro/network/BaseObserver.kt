@@ -1,12 +1,13 @@
 package com.pro.network
 
 import android.util.Log
+import com.pro.utils.LogUtil
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
-import okhttp3.ResponseBody
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
+import retrofit2.Response
 import java.io.IOException
 
 
@@ -22,9 +23,21 @@ abstract class BaseObserver<T> : Observer<T> {
             onHandleError("empty response!")
         } else {
             try {
-                if (value is ResponseBody) {
-                    val bean = JSONObject((value as ResponseBody).string())
-                    onHandleSuccess(bean)
+                if (value is Response<*>) {
+                    val code = value.code()
+                    LogUtil.logE(TAG, "code-->$code")
+                    //http展厅码的处理
+                    when (code) {
+                        200 -> {
+                            val bean = JSONObject(value.body().toString())
+                            onHandleSuccess(bean)
+                        }
+                        4001 -> {//获取token
+                            UserDeviceInfo.getToken()
+                            retry()
+                        }
+                        else -> onHandleError("response error $code")
+                    }
                 } else {
                     onHandleError("response not ResponseBody type")
                 }
@@ -35,23 +48,24 @@ abstract class BaseObserver<T> : Observer<T> {
                 e.printStackTrace()
                 onHandleError("IOException")
             }
-
         }
     }
 
     override fun onError(e: Throwable) {
         var needHandleError = true
-        if (e is HttpException){
+        if (e is HttpException) {
             val errorCode = e.response().code()
-            if (errorCode == 4001){
+            LogUtil.logE(TAG, "errorCode-->$errorCode")
+            if (errorCode == 4001) {
                 //获取token
                 UserDeviceInfo.getToken()
                 needHandleError = false
+                retry()//重试
             }
             //测试获取token
             UserDeviceInfo.getTokenTest()
         }
-        if (needHandleError){
+        if (needHandleError) {
             onHandleError("{error:" + e.message + "}")
         }
     }
@@ -64,8 +78,8 @@ abstract class BaseObserver<T> : Observer<T> {
 
     protected abstract fun onHandleError(msg: String)
 
+    protected abstract fun retry()
     companion object {
         private val TAG = "BaseObserver"
     }
-
 }

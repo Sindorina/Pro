@@ -3,7 +3,7 @@ package com.pro.network
 
 import io.reactivex.Observable
 import okhttp3.ResponseBody
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.*
 
 interface RetrofitService {
@@ -21,10 +21,14 @@ interface RetrofitService {
     fun queryGoodExists(
         @FieldMap fields:Map<String,String>,//参数的map
         @HeaderMap headers:Map<String,String>//header的map
-    ): Observable<ResponseBody>
+    ): Observable<Response<Any>>
 
 
     //测试网络接口
     @GET("/")
     fun getTokenTest(): Observable<ResponseBody>
+
+    //测试接口
+    @GET("top250")
+    fun test(@Query("start") start :Int, @Query("count") count :Int): Observable<Response<Any>>
 }

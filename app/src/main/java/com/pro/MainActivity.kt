@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
          * @sample BaseObserver.onError  链接
          * 一秒一次总共3次
          */
-        queryGoods()
+        test()
     }
 
     private fun initDeviceInfo(){
@@ -31,13 +31,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun queryGoods(){
-        val fieldMap = mapOf(Pair("phone", UserDeviceInfo.phone),
-            Pair("password", UserDeviceInfo.password)
+        val fieldMap = mapOf(Pair("id", "111"),
+            Pair("name", "pair")
         )
         //headerMap这个是公共的请求header  看下是不是所有除获取token的其他接口都一样的
         val headerMap = UserDeviceInfo.getHeaderMap()
-        val observable = RetrofitFactory.instance.getToken(fieldMap,headerMap)
-        ApiMethod.apiSubscribe(observable, object:BaseObserver<Any>(){
+        val observable = RetrofitFactory.instance.queryGoodExists(fieldMap,headerMap)
+        ApiMethod.apiSubscribe2(observable, object:BaseObserver<Any>(){
+            override fun retry() {
+                //重新请求一次本次接口
+            }
+
             override fun onHandleError(msg: String) {
                 LogUtil.logE(TAG,"result错误->$msg")
             }
@@ -45,10 +49,23 @@ class MainActivity : AppCompatActivity() {
             override fun onHandleSuccess(t: JSONObject) {
                 LogUtil.logE(TAG,"result->$t")
             }
-
-            override fun onError(e: Throwable) {
-            }
         })
     }
 
+    private fun test(){
+        val observable = RetrofitFactory.instance.test(0, 10)
+        ApiMethod.apiSubscribe2(observable,object :BaseObserver<Any>(){
+            override fun retry() {
+
+            }
+
+            override fun onHandleError(msg: String) {
+                LogUtil.logE(TAG,"result错误->$msg")
+            }
+
+            override fun onHandleSuccess(t: JSONObject) {
+                LogUtil.logE(TAG,"result->$t")
+            }
+        })
+    }
 }

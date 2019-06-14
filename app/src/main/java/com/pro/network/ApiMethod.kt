@@ -1,10 +1,12 @@
 package com.pro.network
 
+import com.pro.utils.LogUtil
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
+import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
 object ApiMethod {
@@ -16,15 +18,22 @@ object ApiMethod {
         observable.subscribeOn(Schedulers.io())
             .unsubscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .retryWhen {
-                return@retryWhen it.flatMap {
-                    if (++retryCount < 3) {
-                        Observable.timer(1000, TimeUnit.SECONDS)
-                    } else {
-                        Observable.error(Throwable("重试失败!"))
-                    }
-                }
-            }
+//            .retryWhen {
+//                return@retryWhen it.flatMap {
+//                    if (++retryCount < 3) {
+//                        Observable.timer(1000, TimeUnit.SECONDS)
+//                    } else {
+//                        Observable.error(Throwable("重试失败!"))
+//                    }
+//                }
+//            }
+            .subscribe(observer)
+    }
+
+    fun apiSubscribe2(observable: Observable<Response<Any>>, observer: Observer<Any>) {
+        observable.subscribeOn(Schedulers.io())
+            .unsubscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(observer)
     }
 }
